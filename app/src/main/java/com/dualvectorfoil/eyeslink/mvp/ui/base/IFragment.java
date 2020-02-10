@@ -1,8 +1,8 @@
-package com.dualvectorfoil.eyeslink.base;
+package com.dualvectorfoil.eyeslink.mvp.ui.base;
 
 import android.os.Bundle;
 
-public interface IActivity {
+public interface IFragment {
 
     int getLayout();
 

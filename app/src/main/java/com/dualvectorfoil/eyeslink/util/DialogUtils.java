@@ -1,4 +1,4 @@
-package com.dualvectorfoil.eyeslink.utils;
+package com.dualvectorfoil.eyeslink.util;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -28,7 +28,7 @@ public class DialogUtils {
          * 得到加载view
          */
         View v = inflater.inflate(R.layout.loading_dialog, null);
-        TextView tipTextView =  v.findViewById(R.id.tipTextView);// 提示文字
+        TextView tipTextView = v.findViewById(R.id.tipTextView);// 提示文字
         if (msg != null && !msg.equals("")) {
             tipTextView.setText(msg);// 设置加载信息
         }
@@ -39,9 +39,11 @@ public class DialogUtils {
         loadingDialog.setContentView(v);// 设置布局
 
         DisplayMetrics dm = context.getResources().getDisplayMetrics();
-        int width = (int) (dm.widthPixels*0.3);
+        int width = (int) (dm.widthPixels * 0.3);
         int height = ViewGroup.LayoutParams.WRAP_CONTENT;
-        loadingDialog.getWindow().setLayout(width ,height);
+        if (loadingDialog.getWindow() != null) {
+            loadingDialog.getWindow().setLayout(width, height);
+        }
 
         return loadingDialog;
     }

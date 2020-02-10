@@ -1,4 +1,4 @@
-package com.dualvectorfoil.eyeslink.base;
+package com.dualvectorfoil.eyeslink.mvp.ui.base;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -11,11 +11,11 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.dualvectorfoil.eyeslink.utils.DialogUtils;
+import com.dualvectorfoil.eyeslink.util.DialogUtils;
 import com.squareup.leakcanary.RefWatcher;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 
-public abstract class BaseFragment<V extends IView, P extends BasePresenter<V>> extends RxFragment implements IView, IFragment {
+public abstract class BaseFragment<P extends BasePresenter> extends RxFragment implements IView, IFragment {
 
     protected P mPresenter;
 
@@ -57,7 +57,7 @@ public abstract class BaseFragment<V extends IView, P extends BasePresenter<V>> 
         RefWatcher refWatcher = BaseApplication.getRefWatcher(context);
         refWatcher.watch(this);
         if (mPresenter != null) {
-            mPresenter.detachView();
+            mPresenter.onDestroy();
         }
     }
 }

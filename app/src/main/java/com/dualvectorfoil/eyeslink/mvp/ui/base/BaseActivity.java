@@ -1,16 +1,19 @@
-package com.dualvectorfoil.eyeslink.base;
+package com.dualvectorfoil.eyeslink.mvp.ui.base;
 
 import android.app.Dialog;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
-import com.dualvectorfoil.eyeslink.utils.DialogUtils;
+import com.dualvectorfoil.eyeslink.util.DialogUtils;
 import com.squareup.leakcanary.RefWatcher;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
-public abstract class BaseActivity<V extends IView, P extends BasePresenter<V>> extends RxAppCompatActivity implements IView, IActivity {
+import javax.inject.Inject;
 
+public abstract class BaseActivity<P extends BasePresenter> extends RxAppCompatActivity implements IView, IActivity {
+
+    @Inject
     protected P mPresenter;
     protected Dialog mDialog;
 
@@ -19,16 +22,10 @@ public abstract class BaseActivity<V extends IView, P extends BasePresenter<V>> 
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayout());
-        if (mPresenter == null) {
-            mPresenter = createPresenter();
-        }
-        mPresenter.attachView((V) this);
         mDialog = DialogUtils.createLoadingDialog(this, "请稍后...");
         initView();
         initData(savedInstanceState);
     }
-
-    protected abstract P createPresenter();
 
     @Override
     protected void onDestroy() {
@@ -36,7 +33,7 @@ public abstract class BaseActivity<V extends IView, P extends BasePresenter<V>> 
         RefWatcher refWatcher = BaseApplication.getRefWatcher(this);
         refWatcher.watch(this);
         if (mPresenter != null) {
-            mPresenter.detachView();
+            mPresenter.onDestroy();
         }
     }
 }

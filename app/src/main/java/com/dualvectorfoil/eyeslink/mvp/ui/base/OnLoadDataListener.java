@@ -1,4 +1,4 @@
-package com.dualvectorfoil.eyeslink.base;
+package com.dualvectorfoil.eyeslink.mvp.ui.base;
 
 public interface OnLoadDataListener<T> {
 

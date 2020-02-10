@@ -1,4 +1,4 @@
-package com.dualvectorfoil.eyeslink.base;
+package com.dualvectorfoil.eyeslink.mvp.ui.base;
 
 import android.app.Application;
 import android.content.Context;
@@ -26,11 +26,12 @@ public class BaseApplication extends Application {
         QbSdk.PreInitCallback cb = new QbSdk.PreInitCallback() {
             @Override
             public void onCoreInitFinished() {
+                Log.d("X5_kernel", "onCoreInitFinished");
             }
 
             @Override
-            public void onViewInitFinished(boolean b) {
-                Log.d("X5_kernel", "onViewInitFinished is " + b);
+            public void onViewInitFinished(boolean isFinished) {
+                Log.d("X5_kernel", "onViewInitFinished is " + isFinished);
             }
         };
 
