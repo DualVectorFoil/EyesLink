@@ -2,31 +2,22 @@ package com.dualvectorfoil.eyeslink.util;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AlertDialog;
 
 import com.dualvectorfoil.eyeslink.R;
 
 public class DialogUtils {
 
-    /**
-     * 获取一个类似加载的对话框
-     *
-     * @param context 上下文
-     * @param msg     文字说明
-     * @return 对话框的对象
-     */
     public static Dialog createLoadingDialog(Context context, String msg) {
-        /*
-         * 获得view填充器对象
-         */
         LayoutInflater inflater = LayoutInflater.from(context);
-        /*
-         * 得到加载view
-         */
         View v = inflater.inflate(R.layout.loading_dialog, null);
         TextView tipTextView = v.findViewById(R.id.tipTextView);// 提示文字
         if (msg != null && !msg.equals("")) {
@@ -46,5 +37,21 @@ public class DialogUtils {
         }
 
         return loadingDialog;
+    }
+
+    public static AlertDialog createAddUrlInfoDialog(Context context, DialogInterface.OnClickListener positiveListener, View dialogView) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("新增地址")
+                .setView(dialogView)
+                .setPositiveButton("确认", positiveListener)
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                })
+                .setCancelable(true);
+        AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(true);
+        return dialog;
     }
 }
