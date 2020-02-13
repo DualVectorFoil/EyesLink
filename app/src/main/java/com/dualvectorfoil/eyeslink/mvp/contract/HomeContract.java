@@ -10,11 +10,13 @@ public interface HomeContract {
 
         // TODO parameters of url info for gridview
         void addUrlIcon();
+
+        void showAddUrlInfoToast(String msg);
     }
 
     interface IHomeModel extends IModel {
 
-        void addUrlInfo();
+        boolean addUrlInfo(String url, String name, String user, String password);
     }
 
     // TODO

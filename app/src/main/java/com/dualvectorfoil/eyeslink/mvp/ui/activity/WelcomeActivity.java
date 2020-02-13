@@ -7,10 +7,14 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.dualvectorfoil.eyeslink.R;
+import com.dualvectorfoil.eyeslink.app.constants.Constants;
 import com.dualvectorfoil.eyeslink.mvp.ui.base.BaseApplication;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 
 public class WelcomeActivity extends AppCompatActivity {
 
@@ -29,5 +33,14 @@ public class WelcomeActivity extends AppCompatActivity {
                 finish();
             }
         }, DELAY_TIME);
+        initRealmDB();
+    }
+
+    private void initRealmDB() {
+        Realm.init(BaseApplication.getContext());
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .name(Constants.DB_NAME)
+                .build();
+        Realm.setDefaultConfiguration(config);
     }
 }

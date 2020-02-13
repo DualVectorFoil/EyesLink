@@ -7,7 +7,6 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -39,11 +38,11 @@ public class DialogUtils {
         return loadingDialog;
     }
 
-    public static AlertDialog createAddUrlInfoDialog(Context context, DialogInterface.OnClickListener positiveListener, View dialogView) {
+    public static AlertDialog createAddUrlInfoDialog(Context context, View.OnClickListener positiveListener, View dialogView) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("新增地址")
                 .setView(dialogView)
-                .setPositiveButton("确认", positiveListener)
+                .setPositiveButton("确认", null)
                 .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -51,6 +50,7 @@ public class DialogUtils {
                 })
                 .setCancelable(true);
         AlertDialog dialog = builder.create();
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(positiveListener);
         dialog.setCanceledOnTouchOutside(true);
         return dialog;
     }

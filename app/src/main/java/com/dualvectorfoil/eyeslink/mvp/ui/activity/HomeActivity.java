@@ -3,6 +3,8 @@ package com.dualvectorfoil.eyeslink.mvp.ui.activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -25,7 +27,7 @@ import com.dualvectorfoil.eyeslink.util.DialogUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HomeActivity extends BaseActivity<HomePresenter> implements HomeContract.IHomeView, BottomNavigationBar.OnTabSelectedListener, ViewPager.OnPageChangeListener {
+public class HomeActivity extends BaseActivity<HomePresenter> implements HomeContract.IHomeView {
 
     private static final String TAG = "HOME_TAG_activity";
 
@@ -68,13 +70,39 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
         List<Fragment> fragments = new ArrayList<Fragment>();
         // TODO add fragment
         mViewPager.setAdapter(new SectionsPagerAdapter(getSupportFragmentManager(), fragments));
-        mViewPager.addOnPageChangeListener(this);
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mNaviBar.selectTab(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
         mViewPager.setCurrentItem(0);
 
         // init bottom navigation bar
         mNaviBar = (BottomNavigationBar) findViewById(R.id.home_navi_bar);
         mNaviBar.setBackgroundStyle(BottomNavigationBar.BACKGROUND_STYLE_STATIC);
-        mNaviBar.setTabSelectedListener(this);
+        mNaviBar.setTabSelectedListener(new BottomNavigationBar.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(int position) {
+                mViewPager.setCurrentItem(position);
+            }
+
+            @Override
+            public void onTabUnselected(int position) {
+            }
+
+            @Override
+            public void onTabReselected(int position) {
+            }
+        });
         mNaviBar.addItem(new BottomNavigationItem(R.mipmap.ic_home_page_navi_icon, ""))
                 .addItem(new BottomNavigationItem(R.mipmap.ic_message_icon, ""))
                 .addItem(new BottomNavigationItem(R.mipmap.ic_setting_icon, ""))
@@ -88,11 +116,21 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
 
     public void showAddUrlInfoDialog() {
         if (mAddUrlInfoDialog == null) {
+            AddUrlInfoView addUrlInfoView = new AddUrlInfoView(this);
             mAddUrlInfoDialog = DialogUtils.createAddUrlInfoDialog(this,
-                    new DialogInterface.OnClickListener() {
+                    new View.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            mPresenter.handleAddUrlInfo();
+                        public void onClick(View view) {
+                            boolean isSuccess = mPresenter.handleAddUrlInfo(
+                                    addUrlInfoView.getUrl(),
+                                    addUrlInfoView.getName(),
+                                    addUrlInfoView.getUser(),
+                                    addUrlInfoView.getPassword()
+                            );
+                            if (isSuccess) {
+                                // TODO nullptr?
+                                mAddUrlInfoDialog.dismiss();
+                            }
                         }
                     }, new AddUrlInfoView(this));
         }
@@ -101,36 +139,11 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
 
     @Override
     public void addUrlIcon() {
-        // TODO add icon in the home page fragment
+        // TODO add url icon in home page fragment with dialog's operation
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-    }
-
-    @Override
-    public void onPageSelected(int position) {
-        mNaviBar.selectTab(position);
-    }
-
-    @Override
-    public void onPageScrollStateChanged(int state) {
-
-    }
-
-    @Override
-    public void onTabSelected(int position) {
-        mViewPager.setCurrentItem(position);
-    }
-
-    @Override
-    public void onTabUnselected(int position) {
-
-    }
-
-    @Override
-    public void onTabReselected(int position) {
-
+    public void showAddUrlInfoToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 }

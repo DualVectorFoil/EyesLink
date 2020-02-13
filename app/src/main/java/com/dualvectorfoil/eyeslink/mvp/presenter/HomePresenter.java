@@ -14,13 +14,27 @@ public class HomePresenter extends BasePresenter<HomeContract.IHomeModel, HomeCo
         super(model, view);
     }
 
-    public void handleAddUrlInfo() {
+    public boolean handleAddUrlInfo(String url, String name, String user, String password) {
+        if ("".equals(name)) {
+            name = url;
+        }
 
-    }
+        boolean isSuccess = true;
+        if ("".equals(url)) {
+            isSuccess = false;
+        } else {
+            isSuccess = mModel.addUrlInfo(url, name, user, password);
+        }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        // TODO
+        String toastMsg;
+        if (isSuccess) {
+            toastMsg = name + " 地址添加成功";
+        } else {
+            toastMsg = "信息填写错误，地址添加失败";
+        }
+
+        mView.showAddUrlInfoToast(toastMsg);
+
+        return isSuccess;
     }
 }
