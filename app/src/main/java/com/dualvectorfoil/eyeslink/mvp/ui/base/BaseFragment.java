@@ -15,10 +15,12 @@ import com.dualvectorfoil.eyeslink.util.DialogUtils;
 import com.squareup.leakcanary.RefWatcher;
 import com.trello.rxlifecycle2.components.support.RxFragment;
 
+import javax.inject.Inject;
+
 public abstract class BaseFragment<P extends BasePresenter> extends RxFragment implements IView, IFragment {
 
+    @Inject
     protected P mPresenter;
-
     protected View mRootView;
     protected Dialog mDialog;
 
@@ -33,18 +35,12 @@ public abstract class BaseFragment<P extends BasePresenter> extends RxFragment i
             parent.removeView(mRootView);
         }
 
-        if (mPresenter == null) {
-            mPresenter = createPresenter();
-        }
-
         mDialog = DialogUtils.createLoadingDialog(getActivity(), "请稍后...");
 
         initView();
         initData(savedInstanceState);
         return mRootView;
     }
-
-    protected abstract P createPresenter();
 
     @Override
     public void onDestroyView() {
