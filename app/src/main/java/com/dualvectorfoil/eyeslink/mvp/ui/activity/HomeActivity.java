@@ -1,9 +1,10 @@
 package com.dualvectorfoil.eyeslink.mvp.ui.activity;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -21,7 +22,6 @@ import com.dualvectorfoil.eyeslink.mvp.contract.HomeContract;
 import com.dualvectorfoil.eyeslink.mvp.presenter.HomePresenter;
 import com.dualvectorfoil.eyeslink.mvp.ui.adapter.SectionsPagerAdapter;
 import com.dualvectorfoil.eyeslink.mvp.ui.base.BaseActivity;
-import com.dualvectorfoil.eyeslink.mvp.ui.widget.AddUrlInfoView;
 import com.dualvectorfoil.eyeslink.util.DialogUtils;
 
 import java.util.ArrayList;
@@ -103,9 +103,9 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
             public void onTabReselected(int position) {
             }
         });
-        mNaviBar.addItem(new BottomNavigationItem(R.mipmap.ic_home_page_navi_icon, ""))
-                .addItem(new BottomNavigationItem(R.mipmap.ic_message_icon, ""))
-                .addItem(new BottomNavigationItem(R.mipmap.ic_setting_icon, ""))
+        mNaviBar.addItem(new BottomNavigationItem(R.mipmap.ic_home_page_navi_icon, "首页"))
+                .addItem(new BottomNavigationItem(R.mipmap.ic_message_icon, "消息"))
+                .addItem(new BottomNavigationItem(R.mipmap.ic_setting_icon, "设置"))
                 .initialise();
     }
 
@@ -116,23 +116,23 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
 
     public void showAddUrlInfoDialog() {
         if (mAddUrlInfoDialog == null) {
-            AddUrlInfoView addUrlInfoView = new AddUrlInfoView(this);
+            LayoutInflater inflater = LayoutInflater.from(this);
+            View addUrlInfoView = inflater.inflate(R.layout.addurlinfo_dialog, null);
             mAddUrlInfoDialog = DialogUtils.createAddUrlInfoDialog(this,
                     new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             boolean isSuccess = mPresenter.handleAddUrlInfo(
-                                    addUrlInfoView.getUrl(),
-                                    addUrlInfoView.getName(),
-                                    addUrlInfoView.getUser(),
-                                    addUrlInfoView.getPassword()
+                                    ((EditText) addUrlInfoView.findViewById(R.id.url_edit_text)).getText().toString(),
+                                    ((EditText) addUrlInfoView.findViewById(R.id.name_edit_text)).getText().toString(),
+                                    ((EditText) addUrlInfoView.findViewById(R.id.user_edit_text)).getText().toString(),
+                                    ((EditText) addUrlInfoView.findViewById(R.id.password_edit_text)).getText().toString()
                             );
                             if (isSuccess) {
-                                // TODO nullptr?
                                 mAddUrlInfoDialog.dismiss();
                             }
                         }
-                    }, new AddUrlInfoView(this));
+                    }, addUrlInfoView);
         }
         mAddUrlInfoDialog.show();
     }

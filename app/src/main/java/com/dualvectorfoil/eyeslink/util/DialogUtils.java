@@ -7,6 +7,7 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
@@ -50,7 +51,12 @@ public class DialogUtils {
                 })
                 .setCancelable(true);
         AlertDialog dialog = builder.create();
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(positiveListener);
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(positiveListener);
+            }
+        });
         dialog.setCanceledOnTouchOutside(true);
         return dialog;
     }

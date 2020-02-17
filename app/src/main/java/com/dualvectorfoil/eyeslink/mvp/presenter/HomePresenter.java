@@ -1,5 +1,7 @@
 package com.dualvectorfoil.eyeslink.mvp.presenter;
 
+import android.util.Log;
+
 import com.dualvectorfoil.eyeslink.mvp.contract.HomeContract;
 import com.dualvectorfoil.eyeslink.mvp.ui.base.BasePresenter;
 
@@ -20,6 +22,7 @@ public class HomePresenter extends BasePresenter<HomeContract.IHomeModel, HomeCo
         }
 
         boolean isSuccess = true;
+        Log.d("xixi222", "url: " + url + ", name: " + name);
         if ("".equals(url)) {
             isSuccess = false;
         } else {

@@ -20,7 +20,7 @@ public class HomeModel implements HomeContract.IHomeModel {
 
     @Override
     public boolean addUrlInfo(String url, String name, String user, String password) {
-        if ("".equals(user) && !"".equals(password) || "".equals(password) && "".equals(user)) {
+        if ("".equals(user) && !"".equals(password) || "".equals(password) && !"".equals(user)) {
             return false;
         }
 
