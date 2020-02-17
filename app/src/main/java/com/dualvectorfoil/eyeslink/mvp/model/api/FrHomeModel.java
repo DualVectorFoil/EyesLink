@@ -1,10 +1,17 @@
 package com.dualvectorfoil.eyeslink.mvp.model.api;
 
+import android.util.Log;
+
 import com.dualvectorfoil.eyeslink.mvp.contract.FrHomeContract;
+import com.dualvectorfoil.eyeslink.mvp.model.entity.UrlInfo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class FrHomeModel implements FrHomeContract.IFrHomeModel {
 
@@ -15,6 +22,11 @@ public class FrHomeModel implements FrHomeContract.IFrHomeModel {
     @Inject
     public FrHomeModel() {
         mDB = Realm.getDefaultInstance();
+    }
+
+    @Override
+    public List<UrlInfo> getUrlInfoItemViewList() {
+        return new ArrayList<UrlInfo>(mDB.where(UrlInfo.class).findAll());
     }
 
     @Override

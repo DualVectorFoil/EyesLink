@@ -8,9 +8,6 @@ public interface HomeContract {
 
     interface IHomeView extends IView {
 
-        // TODO parameters of url info for gridview
-        void addUrlIcon();
-
         void showAddUrlInfoToast(String msg);
     }
 

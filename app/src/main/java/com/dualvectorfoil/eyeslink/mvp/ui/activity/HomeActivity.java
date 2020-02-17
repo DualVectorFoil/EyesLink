@@ -22,6 +22,7 @@ import com.dualvectorfoil.eyeslink.mvp.contract.HomeContract;
 import com.dualvectorfoil.eyeslink.mvp.presenter.HomePresenter;
 import com.dualvectorfoil.eyeslink.mvp.ui.adapter.SectionsPagerAdapter;
 import com.dualvectorfoil.eyeslink.mvp.ui.base.BaseActivity;
+import com.dualvectorfoil.eyeslink.mvp.ui.fragment.HomeFragment;
 import com.dualvectorfoil.eyeslink.util.DialogUtils;
 
 import java.util.ArrayList;
@@ -68,7 +69,7 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
         // init viewpager
         mViewPager = findViewById(R.id.sections_view_pager);
         List<Fragment> fragments = new ArrayList<Fragment>();
-        // TODO add fragment
+        fragments.add(new HomeFragment());
         mViewPager.setAdapter(new SectionsPagerAdapter(getSupportFragmentManager(), fragments));
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -118,6 +119,11 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
         if (mAddUrlInfoDialog == null) {
             LayoutInflater inflater = LayoutInflater.from(this);
             View addUrlInfoView = inflater.inflate(R.layout.addurlinfo_dialog, null);
+            EditText urlEtView = (EditText) addUrlInfoView.findViewById(R.id.url_edit_text);
+            EditText nameEtView = (EditText) addUrlInfoView.findViewById(R.id.name_edit_text);
+            EditText userEtView = (EditText) addUrlInfoView.findViewById(R.id.user_edit_text);
+            EditText passwordEtView = (EditText) addUrlInfoView.findViewById(R.id.password_edit_text);
+
             mAddUrlInfoDialog = DialogUtils.createAddUrlInfoDialog(this,
                     new View.OnClickListener() {
                         @Override
@@ -129,17 +135,16 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
                                     ((EditText) addUrlInfoView.findViewById(R.id.password_edit_text)).getText().toString()
                             );
                             if (isSuccess) {
+                                urlEtView.setText("");
+                                nameEtView.setText("");
+                                userEtView.setText("");
+                                passwordEtView.setText("");
                                 mAddUrlInfoDialog.dismiss();
                             }
                         }
                     }, addUrlInfoView);
         }
         mAddUrlInfoDialog.show();
-    }
-
-    @Override
-    public void addUrlIcon() {
-        // TODO add url icon in home page fragment with dialog's operation
     }
 
     @Override
