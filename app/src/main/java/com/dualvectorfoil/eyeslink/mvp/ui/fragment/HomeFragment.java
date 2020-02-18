@@ -109,6 +109,7 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements FrHom
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        Log.d("xiha222", "onTouch: " + position);
         if (mLauncherView.isTouchMode() || mLauncherView.isNoneMode() || mDragGridAdapter.isFixed(position)) {
             return;
         }

@@ -5,7 +5,6 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -46,13 +45,12 @@ public class UrlInfoTagLayout extends RelativeLayout {
     }
 
     private void init(Context context) {
-        setWillNotDraw(false);
         mDelIcon = context.getResources().getDrawable(R.mipmap.ic_url_info_tag_delete_icon);
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+    protected void dispatchDraw(Canvas canvas) {
+        super.dispatchDraw(canvas);
         if (mAssumeDelRect == null) {
             setDeleteBounds();
         }

@@ -6,10 +6,8 @@ import android.content.Context;
 import android.util.Log;
 
 import com.dualvectorfoil.eyeslink.app.constants.Constants;
-import com.dualvectorfoil.eyeslink.app.webview.X5WebView;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
-import com.tencent.smtt.sdk.QbSdk;
 
 import java.util.List;
 

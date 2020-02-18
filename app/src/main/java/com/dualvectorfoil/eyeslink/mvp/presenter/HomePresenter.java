@@ -1,7 +1,5 @@
 package com.dualvectorfoil.eyeslink.mvp.presenter;
 
-import android.util.Log;
-
 import com.dualvectorfoil.eyeslink.mvp.contract.HomeContract;
 import com.dualvectorfoil.eyeslink.mvp.ui.base.BasePresenter;
 
