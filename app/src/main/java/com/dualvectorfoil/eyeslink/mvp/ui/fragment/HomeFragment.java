@@ -2,7 +2,6 @@ package com.dualvectorfoil.eyeslink.mvp.ui.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -12,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 import com.dualvectorfoil.eyeslink.R;
 import com.dualvectorfoil.eyeslink.di.component.DaggerFrHomeComponent;
@@ -21,6 +21,9 @@ import com.dualvectorfoil.eyeslink.mvp.model.entity.UrlInfo;
 import com.dualvectorfoil.eyeslink.mvp.presenter.FrHomePresenter;
 import com.dualvectorfoil.eyeslink.mvp.ui.adapter.DragGridAdapter;
 import com.dualvectorfoil.eyeslink.mvp.ui.base.BaseFragment;
+import com.dualvectorfoil.eyeslink.mvp.ui.base.OnConfirmListener;
+import com.dualvectorfoil.eyeslink.mvp.ui.widget.UrlInfoTagLayout;
+import com.dualvectorfoil.eyeslink.util.DialogUtils;
 import com.huxq17.handygridview.HandyGridView;
 import com.huxq17.handygridview.listener.OnItemCapturedListener;
 
@@ -28,13 +31,15 @@ import java.util.List;
 
 public class HomeFragment extends BaseFragment<FrHomePresenter> implements
         FrHomeContract.IFrHomeView, View.OnTouchListener, AdapterView.OnItemClickListener,
-        AdapterView.OnItemLongClickListener, OnItemCapturedListener {
+        AdapterView.OnItemLongClickListener, OnItemCapturedListener, DragGridAdapter.OnUrlInfoTagDeleteListener {
 
     private static final String TAG = "FR_HOME_TAG_fragment";
 
     private Activity mActivity;
     private HandyGridView mLauncherView;
     private DragGridAdapter mDragGridAdapter;
+
+    private AlertDialog mDeleteUrlInfoDialog;
 
     @Nullable
     @Override
@@ -65,13 +70,7 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
     public void initData(Bundle savedInstanceState) {
         List<UrlInfo> urlInfoItemViewList = mPresenter.getUrlInfoItemViewList();
         mDragGridAdapter = new DragGridAdapter(mActivity, urlInfoItemViewList);
-        mDragGridAdapter.setOnUrlInfoTagDeleteListener(new DragGridAdapter.OnUrlInfoTagDeleteListener() {
-            @Override
-            public boolean onDelete(UrlInfo urlInfo) {
-                // TODO update realm db, show dialog for remind delete
-                return true;
-            }
-        });
+        mDragGridAdapter.setOnUrlInfoTagDeleteListener(this);
         mLauncherView.setAdapter(mDragGridAdapter);
         setMode(HandyGridView.MODE.LONG_PRESS);
     }
@@ -83,7 +82,6 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        // TODO cancel touch mode
         int action = event.getAction();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
@@ -118,6 +116,7 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
             return true;
         }
         return false;
+        // TODO 改成弹出长按地址的详细操作，在UrlInfoTagLayout里面处理，addview到windowmanager里
     }
 
     @Override
@@ -130,5 +129,16 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
     public void onItemReleased(View v, int position) {
         v.setScaleX(1.0f);
         v.setScaleY(1.0f);
+    }
+
+    @Override
+    public void onDelete(UrlInfoTagLayout tag, DragGridAdapter.OnUrlInfoModelDeleteListener listener) {
+        mPresenter.deleteUrlInfo(tag, listener);
+    }
+
+    @Override
+    public void showDeleteUrlInfoDialog(UrlInfoTagLayout tag, OnConfirmListener listener) {
+        mDeleteUrlInfoDialog = DialogUtils.createDeleteUrlInfoDialog(mActivity, tag, listener);
+        mDeleteUrlInfoDialog.show();
     }
 }

@@ -1,8 +1,13 @@
 package com.dualvectorfoil.eyeslink.mvp.presenter;
 
+import android.util.Log;
+
 import com.dualvectorfoil.eyeslink.mvp.contract.FrHomeContract;
 import com.dualvectorfoil.eyeslink.mvp.model.entity.UrlInfo;
+import com.dualvectorfoil.eyeslink.mvp.ui.adapter.DragGridAdapter;
 import com.dualvectorfoil.eyeslink.mvp.ui.base.BasePresenter;
+import com.dualvectorfoil.eyeslink.mvp.ui.base.OnConfirmListener;
+import com.dualvectorfoil.eyeslink.mvp.ui.widget.UrlInfoTagLayout;
 
 import java.util.List;
 
@@ -19,5 +24,24 @@ public class FrHomePresenter extends BasePresenter<FrHomeContract.IFrHomeModel, 
 
     public List<UrlInfo> getUrlInfoItemViewList() {
         return mModel.getUrlInfoItemViewList();
+    }
+
+    public void deleteUrlInfo(UrlInfoTagLayout tag, DragGridAdapter.OnUrlInfoModelDeleteListener delListener) {
+        if (tag.getUrlInfo() == null) {
+            Log.w(TAG, "UrlInfoTagLayout has no UrlInfo");
+        }
+        mView.showDeleteUrlInfoDialog(tag, new OnConfirmListener() {
+            @Override
+            public void onConfirmed() {
+                if (mModel.deleteUrlInfo(tag.getUrlInfo())) {
+                    delListener.onDelete();
+                }
+            }
+
+            @Override
+            public void onDenied() {
+                Log.d(TAG, "Delete url info denied in dialog");
+            }
+        });
     }
 }

@@ -10,10 +10,14 @@ import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.dualvectorfoil.eyeslink.R;
+import com.dualvectorfoil.eyeslink.mvp.model.entity.UrlInfo;
 import com.dualvectorfoil.eyeslink.util.DensityUtil;
 
 public class UrlInfoTagLayout extends RelativeLayout {
 
+    private static final String TAG = "UrlInfoTagLayout";
+
+    private UrlInfo mUrlInfo;
     private Drawable mDelIcon;
     private int mIconWidth;
     private int mIconHeight;
@@ -46,6 +50,14 @@ public class UrlInfoTagLayout extends RelativeLayout {
 
     private void init(Context context) {
         mDelIcon = context.getResources().getDrawable(R.mipmap.ic_url_info_tag_delete_icon);
+    }
+
+    public void setUrlInfo(UrlInfo urlInfo) {
+        mUrlInfo = urlInfo;
+    }
+
+    public UrlInfo getUrlInfo() {
+        return mUrlInfo;
     }
 
     @Override

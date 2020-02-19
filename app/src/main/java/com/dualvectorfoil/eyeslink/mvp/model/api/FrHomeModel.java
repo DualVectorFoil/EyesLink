@@ -27,6 +27,15 @@ public class FrHomeModel implements FrHomeContract.IFrHomeModel {
     }
 
     @Override
+    public boolean deleteUrlInfo(UrlInfo urlInfo) {
+        UrlInfo res = mDB.where(UrlInfo.class).equalTo("mUrl",  urlInfo.geturl()).findFirst();
+        if (res != null) {
+            mDB.executeTransaction((Realm) -> res.deleteFromRealm());
+        }
+        return true;
+    }
+
+    @Override
     public void onDestroy() {
         mDB = null;
     }

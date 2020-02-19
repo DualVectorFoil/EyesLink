@@ -1,11 +1,12 @@
 package com.dualvectorfoil.eyeslink.mvp.model.entity;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 public class UrlInfo extends RealmObject {
 
-    @Required
+    @PrimaryKey
     private String mUrl;
     @Required
     private String mName;

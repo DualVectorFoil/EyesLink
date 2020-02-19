@@ -1,5 +1,7 @@
 package com.dualvectorfoil.eyeslink.mvp.model.api;
 
+import android.util.Log;
+
 import com.dualvectorfoil.eyeslink.mvp.contract.HomeContract;
 import com.dualvectorfoil.eyeslink.mvp.model.entity.UrlInfo;
 
@@ -27,8 +29,12 @@ public class HomeModel implements HomeContract.IHomeModel {
         mDB.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                realm.createObject(UrlInfo.class)
-                        .seturl(url)
+                UrlInfo res = mDB.where(UrlInfo.class).equalTo("mUrl", url).findFirst();
+                if (res != null) {
+                    Log.w(TAG, "Add url info failed, url has exsited");
+                    return;
+                }
+                realm.createObject(UrlInfo.class, url)
                         .setname(name)
                         .setuser(user)
                         .setpassword(password);

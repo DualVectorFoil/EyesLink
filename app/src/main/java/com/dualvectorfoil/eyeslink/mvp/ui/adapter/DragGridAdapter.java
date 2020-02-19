@@ -88,6 +88,7 @@ public class DragGridAdapter extends BaseAdapter implements OnItemMovedListener,
         }
 
         UrlInfoTagLayout tag = (UrlInfoTagLayout) convertView;
+        tag.setUrlInfo(mList.get(position));
         if (!isFixed(position)) {
             tag.showDeleteIcon(mInEditMode);
         } else {
@@ -121,12 +122,14 @@ public class DragGridAdapter extends BaseAdapter implements OnItemMovedListener,
             return;
         }
         int position = index + mGridView.getFirstVisiblePosition();
-        UrlInfo urlInfo = mList.get(position);
 
-        if (mListener.onDelete(urlInfo)) {
-            mList.remove(urlInfo);
-            notifyDataSetChanged();
-        }
+        mListener.onDelete((UrlInfoTagLayout) deleteView, new OnUrlInfoModelDeleteListener() {
+            @Override
+            public void onDelete() {
+                mList.remove(position);
+                notifyDataSetChanged();
+            }
+        });
     }
 
     public void setOnUrlInfoTagDeleteListener(OnUrlInfoTagDeleteListener listener) {
@@ -157,7 +160,11 @@ public class DragGridAdapter extends BaseAdapter implements OnItemMovedListener,
 
     public interface OnUrlInfoTagDeleteListener {
 
-        // TODO delete urlinfo of this view
-        boolean onDelete(UrlInfo urlInfo);
+        void onDelete(UrlInfoTagLayout tag, OnUrlInfoModelDeleteListener listener);
+    }
+
+    public interface OnUrlInfoModelDeleteListener {
+
+        void onDelete();
     }
 }
