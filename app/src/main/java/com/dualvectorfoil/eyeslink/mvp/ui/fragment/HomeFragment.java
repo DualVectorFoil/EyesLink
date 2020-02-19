@@ -26,7 +26,9 @@ import com.huxq17.handygridview.listener.OnItemCapturedListener;
 
 import java.util.List;
 
-public class HomeFragment extends BaseFragment<FrHomePresenter> implements FrHomeContract.IFrHomeView, View.OnTouchListener, AdapterView.OnItemClickListener {
+public class HomeFragment extends BaseFragment<FrHomePresenter> implements
+        FrHomeContract.IFrHomeView, View.OnTouchListener, AdapterView.OnItemClickListener,
+        AdapterView.OnItemLongClickListener, OnItemCapturedListener {
 
     private static final String TAG = "FR_HOME_TAG_fragment";
 
@@ -53,31 +55,10 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements FrHom
 
         mLauncherView.setAutoOptimize(false);
         mLauncherView.setScrollSpeed(750);
-        mLauncherView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                if (!mLauncherView.isTouchMode() && !mLauncherView.isNoneMode() && !mDragGridAdapter.isFixed(position)) {
-                    setMode(HandyGridView.MODE.TOUCH);
-                    return true;
-                }
-                return false;
-            }
-        });
-        mLauncherView.setOnItemCapturedListener(new OnItemCapturedListener() {
-            @Override
-            public void onItemCaptured(View v, int position) {
-                v.setScaleX(1.2f);
-                v.setScaleY(1.2f);
-            }
-
-            @Override
-            public void onItemReleased(View v, int position) {
-                v.setScaleX(1.0f);
-                v.setScaleY(1.0f);
-            }
-        });
-        mLauncherView.setOnItemClickListener(this);
-        mLauncherView.setOnTouchListener(this);
+        mLauncherView.setOnItemLongClickListener(this::onItemLongClick);
+        mLauncherView.setOnItemCapturedListener(this);
+        mLauncherView.setOnItemClickListener(this::onItemClick);
+        mLauncherView.setOnTouchListener(this::onTouch);
     }
 
     @Override
@@ -102,19 +83,52 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements FrHom
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        Log.d("xiha222", "onTouch: " + event.getAction());
         // TODO cancel touch mode
+        int action = event.getAction();
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                if (mLauncherView.isTouchMode()) {
+                    mLauncherView.requestDisallowInterceptTouchEvent(true);
+                }
+                break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_UP:
+                break;
+            default:
+        }
         return false;
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Log.d("xiha222", "onTouch: " + position);
         if (mLauncherView.isTouchMode() || mLauncherView.isNoneMode() || mDragGridAdapter.isFixed(position)) {
             return;
         }
 
         // TODO start webview
         Toast.makeText(mActivity, "点击了" + position, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        if (!mLauncherView.isTouchMode() && !mLauncherView.isNoneMode() && !mDragGridAdapter.isFixed(position)) {
+            setMode(HandyGridView.MODE.TOUCH);
+            mLauncherView.requestDisallowInterceptTouchEvent(true);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onItemCaptured(View v, int position) {
+        v.setScaleX(1.2f);
+        v.setScaleY(1.2f);
+    }
+
+    @Override
+    public void onItemReleased(View v, int position) {
+        v.setScaleX(1.0f);
+        v.setScaleY(1.0f);
     }
 }
