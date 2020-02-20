@@ -33,7 +33,7 @@ public class HomePresenter extends BasePresenter<HomeContract.IHomeModel, HomeCo
             toastMsg = "信息填写错误，地址添加失败";
         }
 
-        mView.showAddUrlInfoToast(toastMsg);
+        mView.onAddUrlInfoSuccess(toastMsg);
 
         return isSuccess;
     }

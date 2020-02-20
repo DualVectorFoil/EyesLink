@@ -2,6 +2,7 @@ package com.dualvectorfoil.eyeslink.mvp.ui.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.dualvectorfoil.eyeslink.R;
+import com.dualvectorfoil.eyeslink.app.event.CommonEvent;
 import com.dualvectorfoil.eyeslink.di.component.DaggerFrHomeComponent;
 import com.dualvectorfoil.eyeslink.di.module.FrHomeModule;
 import com.dualvectorfoil.eyeslink.mvp.contract.FrHomeContract;
@@ -26,6 +28,10 @@ import com.dualvectorfoil.eyeslink.mvp.ui.widget.UrlInfoTagLayout;
 import com.dualvectorfoil.eyeslink.util.DialogUtils;
 import com.huxq17.handygridview.HandyGridView;
 import com.huxq17.handygridview.listener.OnItemCapturedListener;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -45,6 +51,7 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         DaggerFrHomeComponent.builder().frHomeModule(new FrHomeModule(this)).build().inject(this);
+        EventBus.getDefault().register(this);
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -60,10 +67,10 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
 
         mLauncherView.setAutoOptimize(false);
         mLauncherView.setScrollSpeed(750);
-        mLauncherView.setOnItemLongClickListener(this::onItemLongClick);
+        mLauncherView.setOnItemLongClickListener(this);
         mLauncherView.setOnItemCapturedListener(this);
-        mLauncherView.setOnItemClickListener(this::onItemClick);
-        mLauncherView.setOnTouchListener(this::onTouch);
+        mLauncherView.setOnItemClickListener(this);
+        mLauncherView.setOnTouchListener(this);
     }
 
     @Override
@@ -140,5 +147,40 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
     public void showDeleteUrlInfoDialog(UrlInfoTagLayout tag, OnConfirmListener listener) {
         mDeleteUrlInfoDialog = DialogUtils.createDeleteUrlInfoDialog(mActivity, tag, listener);
         mDeleteUrlInfoDialog.show();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onExitUrlInfoEditMode(CommonEvent event) {
+        if (!event.shouldProcess(CommonEvent.ON_EXIT_URL_INFO_EDIT_MODE)) {
+            return;
+        }
+
+        setMode(HandyGridView.MODE.LONG_PRESS);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEnterUrlInfoEditMode(CommonEvent event) {
+        if (!event.shouldProcess(CommonEvent.ON_ENTER_URL_INFO_EDIT_MODE)) {
+            return;
+        }
+
+        if (!mLauncherView.isTouchMode() && !mLauncherView.isNoneMode()) {
+            setMode(HandyGridView.MODE.TOUCH);
+            mLauncherView.requestDisallowInterceptTouchEvent(true);
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAddUrlInfoSuccess(CommonEvent event) {
+        if (!event.shouldProcess(CommonEvent.ON_ADD_URL_INFO_SUCCESS)) {
+            return;
+        }
+        mDragGridAdapter.setData(mPresenter.getUrlInfoItemViewList());
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

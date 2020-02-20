@@ -1,10 +1,14 @@
 package com.dualvectorfoil.eyeslink.mvp.ui.activity;
 
+import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -16,6 +20,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.dualvectorfoil.eyeslink.R;
+import com.dualvectorfoil.eyeslink.app.event.CommonEvent;
 import com.dualvectorfoil.eyeslink.di.component.DaggerHomeComponent;
 import com.dualvectorfoil.eyeslink.di.module.HomeModule;
 import com.dualvectorfoil.eyeslink.mvp.contract.HomeContract;
@@ -24,6 +29,8 @@ import com.dualvectorfoil.eyeslink.mvp.ui.adapter.SectionsPagerAdapter;
 import com.dualvectorfoil.eyeslink.mvp.ui.base.BaseActivity;
 import com.dualvectorfoil.eyeslink.mvp.ui.fragment.HomeFragment;
 import com.dualvectorfoil.eyeslink.util.DialogUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +43,13 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
     private BottomNavigationBar mNaviBar;
     private ViewPager mViewPager;
     private AlertDialog mAddUrlInfoDialog;
+    private LayoutInflater mInflater;
+
+    private View mCancelEditModeView;
+    private WindowManager.LayoutParams mParams;
+    private WindowManager mWindowManager;
+
+    private List<Fragment> mFragments;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,26 +65,27 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
     @Override
     public void initView() {
         // init toolbar
+        mInflater = LayoutInflater.from(this);
         mToolbar = (Toolbar) findViewById(R.id.home_toolbar);
         mToolbar.inflateMenu(R.menu.home_toolbar_menu);
-        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.add_url_item:
-                        showAddUrlInfoDialog();
-                        break;
-                    default:
-                }
-                return true;
+        mToolbar.setOnMenuItemClickListener((MenuItem item) -> {
+            switch (item.getItemId()) {
+                case R.id.add_url_item:
+                    showAddUrlInfoDialog();
+                    break;
+                case R.id.edit_url_item:
+                    editUrlInfo();
+                    break;
+                default:
             }
+            return true;
         });
 
         // init viewpager
         mViewPager = findViewById(R.id.sections_view_pager);
-        List<Fragment> fragments = new ArrayList<Fragment>();
-        fragments.add(new HomeFragment());
-        mViewPager.setAdapter(new SectionsPagerAdapter(getSupportFragmentManager(), fragments));
+        mFragments = new ArrayList<Fragment>();
+        mFragments.add(new HomeFragment());
+        mViewPager.setAdapter(new SectionsPagerAdapter(getSupportFragmentManager(), mFragments));
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -115,40 +130,69 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
 
     }
 
-    public void showAddUrlInfoDialog() {
+    private void showAddUrlInfoDialog() {
         if (mAddUrlInfoDialog == null) {
-            LayoutInflater inflater = LayoutInflater.from(this);
-            View addUrlInfoView = inflater.inflate(R.layout.addurlinfo_dialog, null);
+            View addUrlInfoView = mInflater.inflate(R.layout.addurlinfo_dialog, null);
             EditText urlEtView = (EditText) addUrlInfoView.findViewById(R.id.url_edit_text);
             EditText nameEtView = (EditText) addUrlInfoView.findViewById(R.id.name_edit_text);
             EditText userEtView = (EditText) addUrlInfoView.findViewById(R.id.user_edit_text);
             EditText passwordEtView = (EditText) addUrlInfoView.findViewById(R.id.password_edit_text);
 
             mAddUrlInfoDialog = DialogUtils.createAddUrlInfoDialog(this,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            boolean isSuccess = mPresenter.handleAddUrlInfo(
-                                    ((EditText) addUrlInfoView.findViewById(R.id.url_edit_text)).getText().toString(),
-                                    ((EditText) addUrlInfoView.findViewById(R.id.name_edit_text)).getText().toString(),
-                                    ((EditText) addUrlInfoView.findViewById(R.id.user_edit_text)).getText().toString(),
-                                    ((EditText) addUrlInfoView.findViewById(R.id.password_edit_text)).getText().toString()
-                            );
-                            if (isSuccess) {
-                                urlEtView.setText("");
-                                nameEtView.setText("");
-                                userEtView.setText("");
-                                passwordEtView.setText("");
-                                mAddUrlInfoDialog.dismiss();
-                            }
+                    (View v) -> {
+                        boolean isSuccess = mPresenter.handleAddUrlInfo(
+                                urlEtView.getText().toString(),
+                                nameEtView.getText().toString(),
+                                userEtView.getText().toString(),
+                                passwordEtView.getText().toString()
+                        );
+                        if (isSuccess) {
+                            urlEtView.setText("");
+                            urlEtView.requestFocus();
+                            nameEtView.setText("");
+                            userEtView.setText("");
+                            passwordEtView.setText("");
+                            mAddUrlInfoDialog.dismiss();
                         }
                     }, addUrlInfoView);
         }
         mAddUrlInfoDialog.show();
     }
 
+    private void editUrlInfo() {
+        Toast.makeText(this, "拖动网站图标进行编辑", Toast.LENGTH_SHORT).show();
+        EventBus.getDefault().post(new CommonEvent(CommonEvent.ON_ENTER_URL_INFO_EDIT_MODE));
+
+        if (mWindowManager == null) {
+            mWindowManager = (WindowManager) getSystemService(WindowManager.class);
+            if (mWindowManager == null) {
+                throw new IllegalStateException("get WindowManager failed");
+            }
+        }
+
+        if (mCancelEditModeView == null || mParams == null) {
+            mCancelEditModeView = mInflater.inflate(R.layout.confirm_edit_button, null);
+            ((ImageButton) mCancelEditModeView.findViewById(R.id.confirm_edit_btn)).setOnClickListener((View) -> {
+                EventBus.getDefault().post(new CommonEvent(CommonEvent.ON_EXIT_URL_INFO_EDIT_MODE));
+                mWindowManager.removeView(mCancelEditModeView);
+            });
+
+            mParams = new WindowManager.LayoutParams();
+            mParams.type = WindowManager.LayoutParams.TYPE_APPLICATION;
+            mParams.format = PixelFormat.TRANSLUCENT;
+            mParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
+            mParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
+            mParams.gravity = Gravity.END | Gravity.TOP;
+            mParams.x = 0;
+            mParams.y = 0;
+            mParams.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE| WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+        }
+        mWindowManager.addView(mCancelEditModeView, mParams);
+    }
+
     @Override
-    public void showAddUrlInfoToast(String msg) {
+    public void onAddUrlInfoSuccess(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        EventBus.getDefault().post(new CommonEvent(CommonEvent.ON_ADD_URL_INFO_SUCCESS));
     }
 }

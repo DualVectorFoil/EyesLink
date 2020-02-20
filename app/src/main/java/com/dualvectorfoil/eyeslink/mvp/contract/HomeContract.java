@@ -8,7 +8,7 @@ public interface HomeContract {
 
     interface IHomeView extends IView {
 
-        void showAddUrlInfoToast(String msg);
+        void onAddUrlInfoSuccess(String msg);
     }
 
     interface IHomeModel extends IModel {

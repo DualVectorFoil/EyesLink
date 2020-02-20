@@ -3,7 +3,8 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipChildren="false">
+    android:clipChildren="false"
+    android:descendantFocusability="blocksDescendants">
 
     <com.huxq17.handygridview.HandyGridView
         android:id="@+id/launcher_view"
@@ -14,7 +15,7 @@
         android:numColumns="4"
         android:stretchMode="columnWidth"
         android:horizontalSpacing="10dp"
-        android:verticalSpacing="10dp"
+        android:verticalSpacing="25dp"
         android:clipChildren="false"
         android:clipToPadding="false" />
 

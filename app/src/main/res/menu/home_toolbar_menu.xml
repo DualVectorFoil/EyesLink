@@ -5,4 +5,8 @@
         android:id="@+id/add_url_item"
         android:title="新增网站地址" />
 
+    <item
+        android:id="@+id/edit_url_item"
+        android:title="编辑网站地址" />
+
 </menu>
