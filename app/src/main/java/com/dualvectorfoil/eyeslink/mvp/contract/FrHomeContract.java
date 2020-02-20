@@ -23,10 +23,7 @@ public interface FrHomeContract {
         boolean deleteUrlInfo(UrlInfo urlInfo);
 
         void onChangeUrlInfoItemIndex(UrlInfo urlInfo, int newIndex);
-    }
 
-    // TODO
-    interface OnDataLoadListener extends OnLoadDataListener<Object> {
-
+        void handleUrlInfoItemEdit(UrlInfo urlInfo, String name, String user, String password);
     }
 }

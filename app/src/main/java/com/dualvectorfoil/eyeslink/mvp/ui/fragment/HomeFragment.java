@@ -2,11 +2,15 @@ package com.dualvectorfoil.eyeslink.mvp.ui.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,9 +27,9 @@ import com.dualvectorfoil.eyeslink.mvp.presenter.FrHomePresenter;
 import com.dualvectorfoil.eyeslink.mvp.ui.adapter.DragGridAdapter;
 import com.dualvectorfoil.eyeslink.mvp.ui.base.BaseFragment;
 import com.dualvectorfoil.eyeslink.mvp.ui.base.OnConfirmListener;
+import com.dualvectorfoil.eyeslink.mvp.ui.widget.CustomGridView;
 import com.dualvectorfoil.eyeslink.mvp.ui.widget.UrlInfoTagLayout;
 import com.dualvectorfoil.eyeslink.util.DialogUtils;
-import com.huxq17.handygridview.HandyGridView;
 import com.huxq17.handygridview.listener.OnItemCapturedListener;
 
 import org.greenrobot.eventbus.EventBus;
@@ -35,16 +39,20 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.List;
 
 public class HomeFragment extends BaseFragment<FrHomePresenter> implements
-        FrHomeContract.IFrHomeView, View.OnTouchListener, AdapterView.OnItemClickListener,
-        AdapterView.OnItemLongClickListener, OnItemCapturedListener, DragGridAdapter.OnUrlInfoTagDeleteListener,
-        DragGridAdapter.OnChangeUrlInfoItemIndexListener {
+        FrHomeContract.IFrHomeView, View.OnTouchListener, AdapterView.OnItemClickListener, OnItemCapturedListener,
+        DragGridAdapter.OnUrlInfoTagDeleteListener, DragGridAdapter.OnChangeUrlInfoItemIndexListener {
 
     private static final String TAG = "FR_HOME_TAG_fragment";
 
+    private LayoutInflater mInflater;
     private Activity mActivity;
-    private HandyGridView mLauncherView;
+    private CustomGridView mLauncherView;
     private DragGridAdapter mDragGridAdapter;
 
+    private AlertDialog mEditUrlInfoDialog;
+    private EditText mNameEt;
+    private EditText mUserEt;
+    private EditText mPasswordEt;
     private AlertDialog mDeleteUrlInfoDialog;
 
     @Nullable
@@ -63,14 +71,15 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
     @Override
     public void initView() {
         mActivity = getActivity();
-        mLauncherView = (HandyGridView) mRootView.findViewById(R.id.launcher_view);
+        mLauncherView = (CustomGridView) mRootView.findViewById(R.id.launcher_view);
 
         mLauncherView.setAutoOptimize(false);
         mLauncherView.setScrollSpeed(750);
-        mLauncherView.setOnItemLongClickListener(this);
         mLauncherView.setOnItemCapturedListener(this);
         mLauncherView.setOnItemClickListener(this);
         mLauncherView.setOnTouchListener(this);
+
+        registerForContextMenu(mLauncherView);
     }
 
     @Override
@@ -80,12 +89,44 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
         mDragGridAdapter.setOnUrlInfoTagDeleteListener(this);
         mDragGridAdapter.setOnChangeUrlInfoItemIndex(this);
         mLauncherView.setAdapter(mDragGridAdapter);
-        setMode(HandyGridView.MODE.LONG_PRESS);
+        setMode(CustomGridView.MODE.LONG_PRESS);
     }
 
-    private void setMode(HandyGridView.MODE mode) {
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        mActivity.getMenuInflater().inflate(R.menu.url_info_item_menu, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo itemInfo = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        int itemId = item.getItemId();
+        UrlInfo urlInfo = (UrlInfo) mDragGridAdapter.getItem(itemInfo.position);
+        // TODO
+        switch (itemId) {
+            case R.id.open_item:
+                openUrlInfoItem(urlInfo);
+                break;
+            case R.id.invite_item:
+                break;
+            case R.id.edit_item:
+                editUrlInfoItem(urlInfo);
+                break;
+            case R.id.delete_item:
+                if (mPresenter.deleteUrlInfo(urlInfo)) {
+                    mDragGridAdapter.setData(mPresenter.getUrlInfoItemViewList());
+                }
+                break;
+            default:
+        }
+
+        return super.onContextItemSelected(item);
+    }
+
+    private void setMode(CustomGridView.MODE mode) {
         mLauncherView.setMode(mode);
-        mDragGridAdapter.setInEditMode(mode == HandyGridView.MODE.TOUCH);
+        mDragGridAdapter.setInEditMode(mode == CustomGridView.MODE.TOUCH);
     }
 
     @Override
@@ -112,19 +153,14 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
             return;
         }
 
-        // TODO start webview
         Toast.makeText(mActivity, "点击了" + position, Toast.LENGTH_SHORT).show();
-    }
 
-    @Override
-    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        if (!mLauncherView.isTouchMode() && !mLauncherView.isNoneMode() && !mDragGridAdapter.isFixed(position)) {
-            setMode(HandyGridView.MODE.TOUCH);
-            mLauncherView.requestDisallowInterceptTouchEvent(true);
-            return true;
+        UrlInfoTagLayout tag = (UrlInfoTagLayout) view;
+        if (tag.getUrlInfo() == null) {
+            Log.e(TAG, "UrlInfoTagLayout has not UrlInfo");
+            return;
         }
-        return false;
-        // TODO 改成弹出长按地址的详细操作，在UrlInfoTagLayout里面处理，addview到windowmanager里
+        openUrlInfoItem(tag.getUrlInfo());
     }
 
     @Override
@@ -161,7 +197,7 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
             return;
         }
 
-        setMode(HandyGridView.MODE.LONG_PRESS);
+        setMode(CustomGridView.MODE.LONG_PRESS);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -171,7 +207,7 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
         }
 
         if (!mLauncherView.isTouchMode() && !mLauncherView.isNoneMode()) {
-            setMode(HandyGridView.MODE.TOUCH);
+            setMode(CustomGridView.MODE.TOUCH);
             mLauncherView.requestDisallowInterceptTouchEvent(true);
         }
     }
@@ -182,6 +218,45 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
             return;
         }
         mDragGridAdapter.setData(mPresenter.getUrlInfoItemViewList());
+    }
+
+    private void openUrlInfoItem(UrlInfo urlInfo) {
+        if (urlInfo == null) {
+            Log.d(TAG, "urlInfo is null, openUrlInfoItem failed");
+            return;
+        }
+
+        // TODO
+
+    }
+
+    private void editUrlInfoItem(UrlInfo urlInfo) {
+        if (mEditUrlInfoDialog == null || mNameEt == null || mUserEt == null || mPasswordEt == null) {
+            if (mInflater == null) {
+                mInflater = LayoutInflater.from(mActivity);
+            }
+
+            View addUrlInfoView = mInflater.inflate(R.layout.editurlinfo_dialog, null);
+            mNameEt = (EditText) addUrlInfoView.findViewById(R.id.name_edit_text);
+            mNameEt.setText(urlInfo.getname());
+            mUserEt = (EditText) addUrlInfoView.findViewById(R.id.user_edit_text);
+            mUserEt.setText(urlInfo.getuser());
+            mPasswordEt = (EditText) addUrlInfoView.findViewById(R.id.password_edit_text);
+            mPasswordEt.setText(urlInfo.getpassword());
+
+            mEditUrlInfoDialog = DialogUtils.createAddUrlInfoDialog(mActivity,
+                    (View v) -> {
+                        mPresenter.handleUrlInfoItemEdit(urlInfo, mNameEt.getText().toString(), mUserEt.getText().toString(), mPasswordEt.getText().toString());
+                        mEditUrlInfoDialog.dismiss();
+                    }, addUrlInfoView, "新增地址");
+        }
+
+        mNameEt.setText(urlInfo.getname());
+        mNameEt.requestFocus();
+        mUserEt.setText(urlInfo.getuser());
+        mPasswordEt.setText(urlInfo.getpassword());
+
+        mEditUrlInfoDialog.show();
     }
 
     @Override

@@ -154,7 +154,7 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
                             passwordEtView.setText("");
                             mAddUrlInfoDialog.dismiss();
                         }
-                    }, addUrlInfoView);
+                    }, addUrlInfoView, "新增地址");
         }
         mAddUrlInfoDialog.show();
     }

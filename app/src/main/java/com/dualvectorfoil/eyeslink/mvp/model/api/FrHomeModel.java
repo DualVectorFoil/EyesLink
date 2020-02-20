@@ -41,6 +41,15 @@ public class FrHomeModel implements FrHomeContract.IFrHomeModel {
     }
 
     @Override
+    public void handleUrlInfoItemEdit(UrlInfo urlInfo, String name, String user, String password) {
+        mDB.executeTransaction((Realm) -> {
+            urlInfo.setname(name);
+            urlInfo.setuser(user);
+            urlInfo.setpassword(password);
+        });
+    }
+
+    @Override
     public void onDestroy() {
         mDB = null;
     }

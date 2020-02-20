@@ -48,4 +48,12 @@ public class FrHomePresenter extends BasePresenter<FrHomeContract.IFrHomeModel, 
             }
         });
     }
+
+    public void handleUrlInfoItemEdit(UrlInfo urlInfo, String name, String user, String password) {
+        mModel.handleUrlInfoItemEdit(urlInfo, name, user, password);
+    }
+
+    public boolean deleteUrlInfo(UrlInfo urlInfo) {
+        return mModel.deleteUrlInfo(urlInfo);
+    }
 }

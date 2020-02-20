@@ -42,9 +42,9 @@ public class DialogUtils {
         return loadingDialog;
     }
 
-    public static AlertDialog createAddUrlInfoDialog(Context context, View.OnClickListener positiveListener, View dialogView) {
+    public static AlertDialog createAddUrlInfoDialog(Context context, View.OnClickListener positiveListener, View dialogView, String title) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("新增地址")
+        builder.setTitle(title)
                 .setView(dialogView)
                 .setPositiveButton("确认", null)
                 .setNegativeButton("取消", (DialogInterface dialogInterface, int i) -> {})
