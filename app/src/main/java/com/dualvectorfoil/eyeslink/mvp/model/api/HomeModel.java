@@ -13,6 +13,8 @@ public class HomeModel implements HomeContract.IHomeModel {
 
     private static final String TAG = "HOME_TAG_model";
 
+    private boolean mAddUrlInfoSucess = false;
+
     private Realm mDB;
 
     @Inject
@@ -26,21 +28,22 @@ public class HomeModel implements HomeContract.IHomeModel {
             return false;
         }
 
-        mDB.executeTransaction(new Realm.Transaction() {
-            @Override
-            public void execute(Realm realm) {
-                UrlInfo res = mDB.where(UrlInfo.class).equalTo("mUrl", url).findFirst();
-                if (res != null) {
-                    Log.w(TAG, "Add url info failed, url has exsited");
-                    return;
-                }
+        mAddUrlInfoSucess = false;
+        mDB.executeTransaction((Realm realm) -> {
+            UrlInfo res = mDB.where(UrlInfo.class).equalTo("mUrl", url).findFirst();
+            if (res != null) {
+                Log.w(TAG, "Add url info failed, url has exsited");
+            } else {
+                int index = mDB.where(UrlInfo.class).findAll().size();
                 realm.createObject(UrlInfo.class, url)
                         .setname(name)
                         .setuser(user)
-                        .setpassword(password);
+                        .setpassword(password)
+                        .setIndex(index);
+                mAddUrlInfoSucess = true;
             }
         });
-        return true;
+        return mAddUrlInfoSucess;
     }
 
     @Override

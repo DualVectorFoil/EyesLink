@@ -30,7 +30,7 @@ public class HomePresenter extends BasePresenter<HomeContract.IHomeModel, HomeCo
         if (isSuccess) {
             toastMsg = name + " 地址添加成功";
         } else {
-            toastMsg = "信息填写错误，地址添加失败";
+            toastMsg = "信息填写错误或该地址已添加，添加失败";
         }
 
         mView.onAddUrlInfoSuccess(toastMsg);

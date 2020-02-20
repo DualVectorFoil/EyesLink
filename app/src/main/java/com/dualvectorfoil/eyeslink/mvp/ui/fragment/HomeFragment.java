@@ -2,7 +2,6 @@ package com.dualvectorfoil.eyeslink.mvp.ui.fragment;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,7 +36,8 @@ import java.util.List;
 
 public class HomeFragment extends BaseFragment<FrHomePresenter> implements
         FrHomeContract.IFrHomeView, View.OnTouchListener, AdapterView.OnItemClickListener,
-        AdapterView.OnItemLongClickListener, OnItemCapturedListener, DragGridAdapter.OnUrlInfoTagDeleteListener {
+        AdapterView.OnItemLongClickListener, OnItemCapturedListener, DragGridAdapter.OnUrlInfoTagDeleteListener,
+        DragGridAdapter.OnChangeUrlInfoItemIndexListener {
 
     private static final String TAG = "FR_HOME_TAG_fragment";
 
@@ -78,6 +78,7 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
         List<UrlInfo> urlInfoItemViewList = mPresenter.getUrlInfoItemViewList();
         mDragGridAdapter = new DragGridAdapter(mActivity, urlInfoItemViewList);
         mDragGridAdapter.setOnUrlInfoTagDeleteListener(this);
+        mDragGridAdapter.setOnChangeUrlInfoItemIndex(this);
         mLauncherView.setAdapter(mDragGridAdapter);
         setMode(HandyGridView.MODE.LONG_PRESS);
     }
@@ -147,6 +148,11 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
     public void showDeleteUrlInfoDialog(UrlInfoTagLayout tag, OnConfirmListener listener) {
         mDeleteUrlInfoDialog = DialogUtils.createDeleteUrlInfoDialog(mActivity, tag, listener);
         mDeleteUrlInfoDialog.show();
+    }
+
+    @Override
+    public void onChangeIndex(UrlInfo urlInfo, int newIndex) {
+        mPresenter.onChangeUrlInfoItemIndex(urlInfo, newIndex);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

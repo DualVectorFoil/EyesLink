@@ -27,7 +27,8 @@ public class DragGridAdapter extends BaseAdapter implements OnItemMovedListener,
     private GridView mGridView;
     private boolean mInEditMode = false;
 
-    private OnUrlInfoTagDeleteListener mListener;
+    private OnUrlInfoTagDeleteListener mDeleteTagListener;
+    private OnChangeUrlInfoItemIndexListener mChangeIndexListener;
 
     public DragGridAdapter(Context context, List<UrlInfo> list) {
         mList = list;
@@ -95,6 +96,9 @@ public class DragGridAdapter extends BaseAdapter implements OnItemMovedListener,
             tag.showDeleteIcon(false);
         }
         tag.setOnTagDeleteListener(this);
+        if (mChangeIndexListener != null) {
+            mChangeIndexListener.onChangeIndex(tag.getUrlInfo(), position);
+        }
 
         return convertView;
     }
@@ -112,8 +116,8 @@ public class DragGridAdapter extends BaseAdapter implements OnItemMovedListener,
 
     @Override
     public void onDelete(View deleteView) {
-        if (mListener == null) {
-            Log.w(TAG, "mListener should not be null, use setOnUrlInfoTagDeleteListener to set");
+        if (mDeleteTagListener == null) {
+            Log.w(TAG, "mDeleteTagListener should not be null, use setOnUrlInfoTagDeleteListener to set");
             return;
         }
 
@@ -123,7 +127,7 @@ public class DragGridAdapter extends BaseAdapter implements OnItemMovedListener,
         }
         int position = index + mGridView.getFirstVisiblePosition();
 
-        mListener.onDelete((UrlInfoTagLayout) deleteView, new OnUrlInfoModelDeleteListener() {
+        mDeleteTagListener.onDelete((UrlInfoTagLayout) deleteView, new OnUrlInfoModelDeleteListener() {
             @Override
             public void onDelete() {
                 mList.remove(position);
@@ -133,7 +137,11 @@ public class DragGridAdapter extends BaseAdapter implements OnItemMovedListener,
     }
 
     public void setOnUrlInfoTagDeleteListener(OnUrlInfoTagDeleteListener listener) {
-        mListener = listener;
+        mDeleteTagListener = listener;
+    }
+
+    public void setOnChangeUrlInfoItemIndex(OnChangeUrlInfoItemIndexListener listener) {
+        mChangeIndexListener = listener;
     }
 
     private class Holder {
@@ -166,5 +174,10 @@ public class DragGridAdapter extends BaseAdapter implements OnItemMovedListener,
     public interface OnUrlInfoModelDeleteListener {
 
         void onDelete();
+    }
+
+    public interface OnChangeUrlInfoItemIndexListener {
+
+        void onChangeIndex(UrlInfo urlInfo, int newIndex);
     }
 }

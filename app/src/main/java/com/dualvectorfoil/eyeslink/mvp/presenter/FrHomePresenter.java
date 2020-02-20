@@ -26,6 +26,10 @@ public class FrHomePresenter extends BasePresenter<FrHomeContract.IFrHomeModel, 
         return mModel.getUrlInfoItemViewList();
     }
 
+    public void onChangeUrlInfoItemIndex(UrlInfo urlInfo, int newIndex) {
+        mModel.onChangeUrlInfoItemIndex(urlInfo, newIndex);
+    }
+
     public void deleteUrlInfo(UrlInfoTagLayout tag, DragGridAdapter.OnUrlInfoModelDeleteListener delListener) {
         if (tag.getUrlInfo() == null) {
             Log.w(TAG, "UrlInfoTagLayout has no UrlInfo");

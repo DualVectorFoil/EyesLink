@@ -21,6 +21,8 @@ public interface FrHomeContract {
         List<UrlInfo> getUrlInfoItemViewList();
 
         boolean deleteUrlInfo(UrlInfo urlInfo);
+
+        void onChangeUrlInfoItemIndex(UrlInfo urlInfo, int newIndex);
     }
 
     // TODO

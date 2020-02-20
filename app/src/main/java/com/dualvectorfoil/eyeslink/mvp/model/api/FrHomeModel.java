@@ -23,7 +23,7 @@ public class FrHomeModel implements FrHomeContract.IFrHomeModel {
 
     @Override
     public List<UrlInfo> getUrlInfoItemViewList() {
-        return new ArrayList<UrlInfo>(mDB.where(UrlInfo.class).findAll());
+        return new ArrayList<UrlInfo>(mDB.where(UrlInfo.class).findAll().sort("mIndex"));
     }
 
     @Override
@@ -33,6 +33,11 @@ public class FrHomeModel implements FrHomeContract.IFrHomeModel {
             mDB.executeTransaction((Realm) -> res.deleteFromRealm());
         }
         return true;
+    }
+
+    @Override
+    public void onChangeUrlInfoItemIndex(UrlInfo urlInfo, int newIndex) {
+        mDB.executeTransaction((Realm) -> urlInfo.setIndex(newIndex));
     }
 
     @Override

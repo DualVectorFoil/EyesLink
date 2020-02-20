@@ -13,6 +13,7 @@ public class UrlInfo extends RealmObject {
     private String mUser;
     private String mPassword;
     private int mResId = -1;
+    private int mIndex = -1;
 
     public String geturl() {
         return mUrl;
@@ -56,5 +57,13 @@ public class UrlInfo extends RealmObject {
 
     public int getResId() {
         return mResId;
+    }
+
+    public void setIndex(int index) {
+        mIndex = index;
+    }
+
+    public int getIndex() {
+        return mIndex;
     }
 }
