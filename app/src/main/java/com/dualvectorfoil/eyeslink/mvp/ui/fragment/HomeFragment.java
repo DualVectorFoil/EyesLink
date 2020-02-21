@@ -1,6 +1,7 @@
 package com.dualvectorfoil.eyeslink.mvp.ui.fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -25,6 +26,7 @@ import com.dualvectorfoil.eyeslink.di.module.FrHomeModule;
 import com.dualvectorfoil.eyeslink.mvp.contract.FrHomeContract;
 import com.dualvectorfoil.eyeslink.mvp.model.entity.UrlInfo;
 import com.dualvectorfoil.eyeslink.mvp.presenter.FrHomePresenter;
+import com.dualvectorfoil.eyeslink.mvp.ui.activity.WebActivity;
 import com.dualvectorfoil.eyeslink.mvp.ui.adapter.DragGridAdapter;
 import com.dualvectorfoil.eyeslink.mvp.ui.base.BaseFragment;
 import com.dualvectorfoil.eyeslink.mvp.ui.base.OnConfirmListener;
@@ -235,8 +237,14 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
             return;
         }
 
-        // TODO
-
+        Intent intent = new Intent(mActivity, WebActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putString("url", urlInfo.geturl());
+        bundle.putString("name", urlInfo.getname());
+        bundle.putString("user", urlInfo.getuser());
+        bundle.putString("password", urlInfo.getpassword());
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     private void editUrlInfoItem(UrlInfo urlInfo) {

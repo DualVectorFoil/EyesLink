@@ -1,6 +1,7 @@
 package com.dualvectorfoil.eyeslink.mvp.ui.activity;
 
 import android.app.SearchManager;
+import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.util.Log;
