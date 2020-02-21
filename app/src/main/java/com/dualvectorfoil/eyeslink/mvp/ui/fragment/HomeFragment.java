@@ -19,6 +19,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.dualvectorfoil.eyeslink.R;
 import com.dualvectorfoil.eyeslink.app.event.CommonEvent;
+import com.dualvectorfoil.eyeslink.app.event.SearchEvent;
 import com.dualvectorfoil.eyeslink.di.component.DaggerFrHomeComponent;
 import com.dualvectorfoil.eyeslink.di.module.FrHomeModule;
 import com.dualvectorfoil.eyeslink.mvp.contract.FrHomeContract;
@@ -218,6 +219,14 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
             return;
         }
         mDragGridAdapter.setData(mPresenter.getUrlInfoItemViewList());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSearchUrlInfoItem(SearchEvent event) {
+        if (!event.shouldProcess(SearchEvent.SEARCH_URL_INFO_ITEM)) {
+            return;
+        }
+        mDragGridAdapter.setData(mPresenter.getUrlInfoItemViewList(event.getSearchInfo()));
     }
 
     private void openUrlInfoItem(UrlInfo urlInfo) {

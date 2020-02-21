@@ -26,6 +26,13 @@ public class FrHomePresenter extends BasePresenter<FrHomeContract.IFrHomeModel, 
         return mModel.getUrlInfoItemViewList();
     }
 
+    public List<UrlInfo> getUrlInfoItemViewList(String searchInfo) {
+        if ("".equals(searchInfo)) {
+            return getUrlInfoItemViewList();
+        }
+        return mModel.getUrlInfoItemViewList(searchInfo);
+    }
+
     public void onChangeUrlInfoItemIndex(UrlInfo urlInfo, int newIndex) {
         mModel.onChangeUrlInfoItemIndex(urlInfo, newIndex);
     }

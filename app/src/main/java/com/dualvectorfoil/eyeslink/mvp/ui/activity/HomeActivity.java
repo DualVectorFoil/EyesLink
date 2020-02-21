@@ -1,5 +1,6 @@
 package com.dualvectorfoil.eyeslink.mvp.ui.activity;
 
+import android.app.SearchManager;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,8 +16,8 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
@@ -24,6 +25,7 @@ import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.dualvectorfoil.eyeslink.R;
 import com.dualvectorfoil.eyeslink.app.event.CommonEvent;
+import com.dualvectorfoil.eyeslink.app.event.SearchEvent;
 import com.dualvectorfoil.eyeslink.di.component.DaggerHomeComponent;
 import com.dualvectorfoil.eyeslink.di.module.HomeModule;
 import com.dualvectorfoil.eyeslink.mvp.contract.HomeContract;
@@ -44,6 +46,7 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
     private static final String TAG = "HOME_TAG_activity";
 
     private Toolbar mToolbar;
+    private MenuItem mMenuSearchItem;
     private BottomNavigationBar mNaviBar;
     private ViewPager mViewPager;
     private AlertDialog mAddUrlInfoDialog;
@@ -72,16 +75,14 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
         mInflater = LayoutInflater.from(this);
         mToolbar = (Toolbar) findViewById(R.id.home_toolbar);
         mToolbar.inflateMenu(R.menu.home_toolbar_menu);
-        handleShowToolbarMenuIcon(mToolbar.getMenu());
+        initToolbarMenu(mToolbar.getMenu());
         mToolbar.setOnMenuItemClickListener((MenuItem item) -> {
             switch (item.getItemId()) {
                 case R.id.add_url_item:
                     showAddUrlInfoDialog();
                     break;
-                case R.id.search_url_item:
-                    break;
                 case R.id.edit_url_item:
-                    editUrlInfo();
+                    editUrlInfoItem();
                     break;
                 default:
             }
@@ -166,7 +167,11 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
         mAddUrlInfoDialog.show();
     }
 
-    private void editUrlInfo() {
+    private void searchUrlInfoItem() {
+
+    }
+
+    private void editUrlInfoItem() {
         Toast.makeText(this, "拖动网站图标进行编辑", Toast.LENGTH_SHORT).show();
         EventBus.getDefault().post(new CommonEvent(CommonEvent.ON_ENTER_URL_INFO_EDIT_MODE));
 
@@ -203,10 +208,46 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
         EventBus.getDefault().post(new CommonEvent(CommonEvent.ON_ADD_URL_INFO_SUCCESS));
     }
 
-    private void handleShowToolbarMenuIcon(Menu menu) {
+    private void initToolbarMenu(Menu menu) {
         if (menu == null || !menu.getClass().getSimpleName().equalsIgnoreCase("MenuBuilder")) {
             return;
         }
+
+        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+        if (mMenuSearchItem == null) {
+            mMenuSearchItem = menu.findItem(R.id.search_url_item);
+        }
+        SearchView searchView = (SearchView) mMenuSearchItem.getActionView();
+        searchView.setQueryHint("请输入搜索网站");
+        searchView.setIconified(false);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                EventBus.getDefault().post(new SearchEvent(SearchEvent.SEARCH_URL_INFO_ITEM, newText));
+                return false;
+            }
+        });
+        menu.findItem(R.id.search_url_item).setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                mNaviBar.setVisibility(View.GONE);
+                menu.setGroupVisible(0, false);
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                mNaviBar.setVisibility(View.VISIBLE);
+                menu.setGroupVisible(0, true);
+                return true;
+            }
+        });
 
         try {
             Method method = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
@@ -215,5 +256,15 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
         } catch (Exception e) {
             Log.e(TAG, "" + e);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mMenuSearchItem.isActionViewExpanded()) {
+            mMenuSearchItem.collapseActionView();
+            return;
+        }
+
+        moveTaskToBack(true);
     }
 }

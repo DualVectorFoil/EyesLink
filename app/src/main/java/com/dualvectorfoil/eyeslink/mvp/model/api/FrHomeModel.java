@@ -27,6 +27,11 @@ public class FrHomeModel implements FrHomeContract.IFrHomeModel {
     }
 
     @Override
+    public List<UrlInfo> getUrlInfoItemViewList(String searchInfo) {
+        return new ArrayList<UrlInfo>(mDB.where(UrlInfo.class).contains("mName", searchInfo).findAll().sort("mIndex"));
+    }
+
+    @Override
     public boolean deleteUrlInfo(UrlInfo urlInfo) {
         UrlInfo res = mDB.where(UrlInfo.class).equalTo("mUrl",  urlInfo.geturl()).findFirst();
         if (res != null) {
