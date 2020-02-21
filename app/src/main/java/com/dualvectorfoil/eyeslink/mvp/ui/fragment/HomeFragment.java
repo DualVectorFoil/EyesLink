@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
 import com.dualvectorfoil.eyeslink.R;
+import com.dualvectorfoil.eyeslink.app.constants.Constants;
 import com.dualvectorfoil.eyeslink.app.event.CommonEvent;
 import com.dualvectorfoil.eyeslink.app.event.SearchEvent;
 import com.dualvectorfoil.eyeslink.di.component.DaggerFrHomeComponent;
@@ -243,7 +244,7 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
         bundle.putString("name", urlInfo.getname());
         bundle.putString("user", urlInfo.getuser());
         bundle.putString("password", urlInfo.getpassword());
-        intent.putExtras(bundle);
+        intent.putExtra(Constants.WEB_ACTIVITY_BUNDLE_KEY, bundle);
         startActivity(intent);
     }
 

@@ -30,6 +30,7 @@
             android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
         <activity android:name=".mvp.ui.activity.WebActivity"
+            android:hardwareAccelerated="true"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:process="com.dualvectorfoil.eyeslink.webview">
         </activity>

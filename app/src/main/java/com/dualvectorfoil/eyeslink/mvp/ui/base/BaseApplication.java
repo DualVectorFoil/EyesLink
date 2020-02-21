@@ -5,6 +5,7 @@ import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import com.dualvectorfoil.eyeslink.BuildConfig;
 import com.dualvectorfoil.eyeslink.app.constants.Constants;
 import com.dualvectorfoil.eyeslink.app.webview.X5WebView;
 import com.squareup.leakcanary.LeakCanary;
@@ -54,7 +55,6 @@ public class BaseApplication extends Application {
     }
 
     private void initMainProcess() {
-
     }
 
     private void initWebviewProcess() {
@@ -72,6 +72,9 @@ public class BaseApplication extends Application {
             }
             @Override
             public void onCoreInitFinished() {
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "initX5 finished");
+                }
             }
         });
     }

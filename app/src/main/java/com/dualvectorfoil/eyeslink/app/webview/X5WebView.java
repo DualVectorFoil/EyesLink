@@ -1,11 +1,15 @@
 package com.dualvectorfoil.eyeslink.app.webview;
 
+import android.app.Activity;
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.core.content.ContextCompat;
 
-import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
+import com.dualvectorfoil.eyeslink.R;
+import com.tencent.smtt.export.external.interfaces.SslError;
+import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
@@ -31,14 +35,12 @@ public class X5WebView {
         return sInstance;
     }
 
-    public void init(Context context) {
+    private void init(Context context) {
         if (mWebView != null) {
             return;
         }
 
-        mWebView = new WebView(context);
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        mWebView.setLayoutParams(params);
+        mWebView = ((Activity) context).findViewById(R.id.main_web_view);
 
         WebSettings settings = mWebView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -62,12 +64,6 @@ public class X5WebView {
         settings.setAppCacheEnabled(true);
         settings.setAppCachePath(context.getFilesDir().getAbsolutePath() + APP_CACHE_DIRNAME);
 
-        mWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest request) {
-                return super.shouldOverrideUrlLoading(webView, request);
-            }
-        });
         mWebView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
         mWebView.setBackgroundResource(android.R.color.white);
         // TODO processBar
@@ -81,13 +77,36 @@ public class X5WebView {
 //
 //            }
 //        });
+        mWebView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+                webView.loadUrl(url);
+                return true;
+            }
+
+            @Override
+            public void onReceivedSslError(WebView webView, SslErrorHandler sslErrorHandler, SslError sslError) {
+                if (sslErrorHandler != null) {
+                    sslErrorHandler.proceed();
+                }
+            }
+
+            @Override
+            public void onPageFinished(WebView webView, String url) {
+                super.onPageFinished(webView, url);
+            }
+        });
         mWebView.setClickable(true);
         mWebView.setOnTouchListener((v, event) -> false);
         mWebView.setHorizontalScrollBarEnabled(false);
         mWebView.setVerticalScrollBarEnabled(false);
+
+        mWebView.clearCache(true);
+        mWebView.clearHistory();
     }
 
-    public WebView getWebView() {
+    public WebView create(Context context) {
+        init(context);
         return mWebView;
     }
 
