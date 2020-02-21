@@ -2,8 +2,10 @@ package com.dualvectorfoil.eyeslink.mvp.ui.activity;
 
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
@@ -32,6 +35,7 @@ import com.dualvectorfoil.eyeslink.util.DialogUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,10 +72,13 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
         mInflater = LayoutInflater.from(this);
         mToolbar = (Toolbar) findViewById(R.id.home_toolbar);
         mToolbar.inflateMenu(R.menu.home_toolbar_menu);
+        handleShowToolbarMenuIcon(mToolbar.getMenu());
         mToolbar.setOnMenuItemClickListener((MenuItem item) -> {
             switch (item.getItemId()) {
                 case R.id.add_url_item:
                     showAddUrlInfoDialog();
+                    break;
+                case R.id.search_url_item:
                     break;
                 case R.id.edit_url_item:
                     editUrlInfo();
@@ -194,5 +201,19 @@ public class HomeActivity extends BaseActivity<HomePresenter> implements HomeCon
     public void onAddUrlInfoSuccess(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
         EventBus.getDefault().post(new CommonEvent(CommonEvent.ON_ADD_URL_INFO_SUCCESS));
+    }
+
+    private void handleShowToolbarMenuIcon(Menu menu) {
+        if (menu == null || !menu.getClass().getSimpleName().equalsIgnoreCase("MenuBuilder")) {
+            return;
+        }
+
+        try {
+            Method method = menu.getClass().getDeclaredMethod("setOptionalIconsVisible", Boolean.TYPE);
+            method.setAccessible(true);
+            method.invoke(menu, true);
+        } catch (Exception e) {
+            Log.e(TAG, "" + e);
+        }
     }
 }
