@@ -6,8 +6,10 @@ import android.content.Context;
 import android.util.Log;
 
 import com.dualvectorfoil.eyeslink.app.constants.Constants;
+import com.dualvectorfoil.eyeslink.app.webview.X5WebView;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
+import com.tencent.smtt.sdk.QbSdk;
 
 import java.util.List;
 
@@ -15,6 +17,8 @@ import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
 public class BaseApplication extends Application {
+
+    private static final String TAG = "BaseApplication";
 
     private static Context mContext;
 
@@ -54,8 +58,25 @@ public class BaseApplication extends Application {
     }
 
     private void initWebviewProcess() {
-        // TODO init x5 webview when enter webview process
+        initX5();
+        initRealm();
+    }
 
+    private void initX5() {
+        QbSdk.initX5Environment(getApplicationContext(), new QbSdk.PreInitCallback() {
+            @Override
+            public void onViewInitFinished(boolean isSuccess) {
+                if (!isSuccess) {
+                    Log.e(TAG, "initX5 failed");
+                }
+            }
+            @Override
+            public void onCoreInitFinished() {
+            }
+        });
+    }
+
+    private void initRealm() {
         Realm.init(this);
         RealmConfiguration config = new RealmConfiguration.Builder()
                 .name(Constants.DB_NAME)

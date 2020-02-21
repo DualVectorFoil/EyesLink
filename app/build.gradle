@@ -64,4 +64,7 @@ dependencies {
 
     // eventbus
     implementation 'org.greenrobot:eventbus:3.2.0'
+
+    // x5 kernel
+    api 'com.tencent.tbs.tbssdk:sdk:43697'
 }
