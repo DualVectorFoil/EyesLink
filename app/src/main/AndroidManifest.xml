@@ -18,7 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:process="com.dualvectorfoil.eyeslink"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:hardwareAccelerated="true">
         <activity android:name=".mvp.ui.activity.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,12 +31,11 @@
             android:configChanges="orientation|keyboardHidden|screenSize">
         </activity>
         <activity android:name=".mvp.ui.activity.WebActivity"
-            android:hardwareAccelerated="true"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:process="com.dualvectorfoil.eyeslink.webview">
         </activity>
         <activity
-            android:name=".mvp.ui.activity.VideoPlayerActivity"
+            android:name="com.tencent.smtt.sdk.VideoActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:launchMode="singleTask"

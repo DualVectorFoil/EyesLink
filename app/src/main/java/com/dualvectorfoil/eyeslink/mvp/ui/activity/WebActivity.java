@@ -66,7 +66,10 @@ public class WebActivity extends BaseActivity<WebPresenter> implements WebContra
         }
 
         mWebView = X5WebView.getInstance().create(this);
-        mWebView.loadUrl("http://www.baidu.com");
+//        if (TbsVideo.canUseTbsPlayer(this)) {
+//            TbsVideo.openVideo(this, "https://m.iqiyi.com/v_19rvt2gn4w.html");
+//        }
+        mWebView.loadUrl("https://www.baidu.com");
     }
 
     @Override

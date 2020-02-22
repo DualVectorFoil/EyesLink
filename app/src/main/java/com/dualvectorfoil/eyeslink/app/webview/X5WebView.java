@@ -2,20 +2,20 @@ package com.dualvectorfoil.eyeslink.app.webview;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.ViewGroup;
 
 import androidx.core.content.ContextCompat;
 
+import com.dualvectorfoil.eyeslink.BuildConfig;
 import com.dualvectorfoil.eyeslink.R;
 import com.tencent.smtt.export.external.interfaces.SslError;
 import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
+
+import java.util.List;
 
 public class X5WebView {
 
@@ -66,6 +66,9 @@ public class X5WebView {
         settings.setDomStorageEnabled(true);
         settings.setAppCacheEnabled(true);
         settings.setAppCachePath(context.getFilesDir().getAbsolutePath() + APP_CACHE_DIRNAME);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            settings.setMixedContentMode(android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
 
         mWebView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
         mWebView.setBackgroundResource(android.R.color.white);
@@ -83,10 +86,15 @@ public class X5WebView {
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView webView, String url) {
-                if (url.startsWith("http:") || url.startsWith("https::")) {
-                    webView.loadUrl(url);
+                if (BuildConfig.DEBUG) {
+                    Log.d(TAG, "url: " + url);
                 }
-                return false;
+
+                if (url.startsWith("http:") || url.startsWith("https:")) {
+                    webView.loadUrl(url);
+                    return super.shouldOverrideUrlLoading(webView, url);
+                }
+                return true;
             }
 
             @Override
@@ -113,19 +121,5 @@ public class X5WebView {
     public WebView create(Context context) {
         init(context);
         return mWebView;
-    }
-
-    public void removeWebView() {
-        if (mWebView == null) {
-            return;
-        }
-
-        ViewGroup parent = (ViewGroup) mWebView.getParent();
-        if (parent != null) {
-            parent.removeView(mWebView);
-        }
-
-        mWebView.clearCache(true);
-        mWebView.clearHistory();
     }
 }
