@@ -9,13 +9,12 @@ import androidx.core.content.ContextCompat;
 
 import com.dualvectorfoil.eyeslink.BuildConfig;
 import com.dualvectorfoil.eyeslink.R;
+import com.dualvectorfoil.eyeslink.app.jsInterface.ObtainVideoTagJSInterface;
 import com.tencent.smtt.export.external.interfaces.SslError;
 import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
-
-import java.util.List;
 
 public class X5WebView {
 
@@ -83,6 +82,7 @@ public class X5WebView {
 //
 //            }
 //        });
+        mWebView.addJavascriptInterface(new ObtainVideoTagJSInterface(), "java_obj");
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView webView, String url) {
@@ -107,6 +107,7 @@ public class X5WebView {
             @Override
             public void onPageFinished(WebView webView, String url) {
                 super.onPageFinished(webView, url);
+                webView.loadUrl("javascript:window.java_obj.onHtml('<head>'+document.getElementsByTagName('html')[0].innerHTML+'</head>');");
             }
         });
         mWebView.setClickable(true);
