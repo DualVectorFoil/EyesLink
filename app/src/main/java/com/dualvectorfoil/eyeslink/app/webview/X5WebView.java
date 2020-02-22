@@ -2,6 +2,9 @@ package com.dualvectorfoil.eyeslink.app.webview;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -80,8 +83,10 @@ public class X5WebView {
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView webView, String url) {
-                webView.loadUrl(url);
-                return true;
+                if (url.startsWith("http:") || url.startsWith("https::")) {
+                    webView.loadUrl(url);
+                }
+                return false;
             }
 
             @Override

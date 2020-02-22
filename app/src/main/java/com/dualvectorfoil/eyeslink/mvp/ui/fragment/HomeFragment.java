@@ -157,8 +157,6 @@ public class HomeFragment extends BaseFragment<FrHomePresenter> implements
             return;
         }
 
-        Toast.makeText(mActivity, "点击了" + position, Toast.LENGTH_SHORT).show();
-
         UrlInfoTagLayout tag = (UrlInfoTagLayout) view;
         if (tag.getUrlInfo() == null) {
             Log.e(TAG, "UrlInfoTagLayout has not UrlInfo");

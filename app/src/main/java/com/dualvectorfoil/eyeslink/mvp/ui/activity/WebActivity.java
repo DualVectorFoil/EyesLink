@@ -2,6 +2,7 @@ package com.dualvectorfoil.eyeslink.mvp.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Process;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -16,10 +17,7 @@ import com.dualvectorfoil.eyeslink.mvp.contract.WebContract;
 import com.dualvectorfoil.eyeslink.mvp.presenter.WebPresenter;
 import com.dualvectorfoil.eyeslink.mvp.ui.base.BaseActivity;
 import com.dualvectorfoil.eyeslink.util.PermissionUtils;
-import com.tencent.smtt.export.external.interfaces.SslError;
-import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
 import com.tencent.smtt.sdk.WebView;
-import com.tencent.smtt.sdk.WebViewClient;
 
 public class WebActivity extends BaseActivity<WebPresenter> implements WebContract.IWebView {
 
@@ -82,6 +80,12 @@ public class WebActivity extends BaseActivity<WebPresenter> implements WebContra
             mWebView.goBack();
             return;
         }
-        finish();
+        Process.killProcess(Process.myPid());
+    }
+
+    @Override
+    protected void onDestroy() {
+        Process.killProcess(Process.myPid());
+        super.onDestroy();
     }
 }

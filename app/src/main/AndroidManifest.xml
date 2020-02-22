@@ -34,6 +34,19 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:process="com.dualvectorfoil.eyeslink.webview">
         </activity>
+        <activity
+            android:name=".mvp.ui.activity.VideoPlayerActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:alwaysRetainTaskState="true"
+            android:process="com.dualvectorfoil.eyeslink.webview">
+            <intent-filter>
+                <action android:name="com.tencent.smtt.tbs.video.PLAY" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+        </activity>
     </application>
 
 </manifest>
