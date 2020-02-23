@@ -12,6 +12,7 @@ import com.dualvectorfoil.eyeslink.R;
 import com.dualvectorfoil.eyeslink.app.jsInterface.ObtainVideoTagJSInterface;
 import com.tencent.smtt.export.external.interfaces.SslError;
 import com.tencent.smtt.export.external.interfaces.SslErrorHandler;
+import com.tencent.smtt.export.external.interfaces.WebResourceRequest;
 import com.tencent.smtt.sdk.WebSettings;
 import com.tencent.smtt.sdk.WebView;
 import com.tencent.smtt.sdk.WebViewClient;
@@ -55,7 +56,7 @@ public class X5WebView {
         settings.setSupportMultipleWindows(true);
         settings.setGeolocationEnabled(true);
         settings.setAppCacheMaxSize(Long.MAX_VALUE);
-        settings.setPluginState(WebSettings.PluginState.ON_DEMAND);
+        settings.setPluginState(WebSettings.PluginState.ON);
         settings.setRenderPriority(WebSettings.RenderPriority.HIGH);
         settings.setCacheMode(WebSettings.LOAD_DEFAULT);
         settings.setAllowFileAccess(true);
@@ -95,6 +96,11 @@ public class X5WebView {
                     return super.shouldOverrideUrlLoading(webView, url);
                 }
                 return true;
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView webView, WebResourceRequest webResourceRequest) {
+                return super.shouldOverrideUrlLoading(webView, webResourceRequest);
             }
 
             @Override

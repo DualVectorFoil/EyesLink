@@ -17,6 +17,7 @@ import com.dualvectorfoil.eyeslink.mvp.contract.WebContract;
 import com.dualvectorfoil.eyeslink.mvp.presenter.WebPresenter;
 import com.dualvectorfoil.eyeslink.mvp.ui.base.BaseActivity;
 import com.dualvectorfoil.eyeslink.util.PermissionUtils;
+import com.tencent.smtt.sdk.TbsVideo;
 import com.tencent.smtt.sdk.WebView;
 
 public class WebActivity extends BaseActivity<WebPresenter> implements WebContract.IWebView {
@@ -67,7 +68,7 @@ public class WebActivity extends BaseActivity<WebPresenter> implements WebContra
 
         mWebView = X5WebView.getInstance().create(this);
 //        if (TbsVideo.canUseTbsPlayer(this)) {
-//            TbsVideo.openVideo(this, "https://m.iqiyi.com/v_19rvt2gn4w.html");
+//            TbsVideo.openVideo(this, "https://m.bilibili.com/video/av63557980");
 //        }
         mWebView.loadUrl("https://www.baidu.com");
     }
